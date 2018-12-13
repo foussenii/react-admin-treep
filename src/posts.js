@@ -1,10 +1,14 @@
 import React from 'react';
-import {Edit,List,Create,Filter,SimpleForm,SelectInput,ReferenceInput,LongTextInput,TextInput,Datagrid,TextField,EditButton,ReferenceField,DisabledInput} from 'react-admin';
+import Button from '@material-ui/core/Button';
+
+import {Edit,List,Create,Filter,SimpleForm,SelectInput,ReferenceInput,LongTextInput,TextInput,Datagrid,TextField,EditButton,ReferenceField,DisabledInput,CardActions, CreateButton, ExportButton, RefreshButton} from 'react-admin';
+
 
 const PostTitle = ({ record }) => {
        return <span>Post {record ? `"${record.title}"` : ''}</span>;
     };
 
+ 
     const PostFilter = (props) => (
         <Filter {...props}>
             <TextInput label="Search" source="q" alwaysOn />
@@ -14,8 +18,50 @@ const PostTitle = ({ record }) => {
         </Filter>
     );
 
-    export const PostList = props => (
-        <List {...props} filters={<PostFilter />}>
+    const PostActions = ({
+        bulkActions,
+        basePath,
+        currentSort,
+        displayedFilters,
+        exporter,
+        filters,
+        filterValues,
+        onUnselectItems,
+        resource,
+        selectedIds,
+        showFilter
+    }) => (
+        <CardActions>
+            {bulkActions && React.cloneElement(bulkActions, {
+                basePath,
+                filterValues,
+                resource,
+                selectedIds,
+                onUnselectItems,
+            })}
+            {filters && React.cloneElement(filters, {
+                resource,
+                showFilter,
+                displayedFilters,
+                filterValues,
+                context: 'button',
+            }) }
+            <CreateButton basePath={basePath} />
+            <ExportButton
+                resource={resource}
+                sort={currentSort}
+                filter={filterValues}
+                exporter={exporter}
+            />
+            <RefreshButton />
+            
+            <Button primary onClick={exporter}>Test</Button>
+            <ExportButton primary onClick={exporter}>Test</ExportButton>
+        </CardActions>
+    );
+    
+    export const PostList = ({permissions, ...props}) => (
+        <List {...props} actions={<PostActions permissions={permissions}/>} title="Liste des agences" filters={<PostFilter />}>
            <Datagrid>
               <TextField source="id" />
                 <ReferenceField source="userId" reference="users">
